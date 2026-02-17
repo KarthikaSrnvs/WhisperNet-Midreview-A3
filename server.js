@@ -45,7 +45,6 @@ setTimeout(() => {
     process.env.PORT = '4003';
     process.env.NEXT_NODE_IP = 'localhost';
     process.env.NEXT_NODE_PORT = '4004'; // Non-existent port means exit node
-    process.env.GEMINI_API_KEY = 'AIzaSyAL_0xpmqIcyHNQT3FFcG3cS5ndgjiAHv8';
     process.env.LOCAL_LLM_URL = 'http://localhost:11434';
     // LOCAL_LLM_MODEL already set to 'llama3' at the top
     
