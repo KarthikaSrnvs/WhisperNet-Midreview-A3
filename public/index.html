@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhisperNet - Decentralized AI Inference</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #e2e8f0;
+        }
+
+        .container {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.2rem;
+            font-weight: 400;
+            letter-spacing: 0.02em;
+        }
+
+        .form-group {
+            margin-bottom: 36px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #f1f5f9;
+            font-size: 1.1rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 20px;
+            border: 2px solid #334155;
+            border-radius: 16px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 140px;
+            transition: all 0.3s ease;
+            background: rgba(15, 23, 42, 0.6);
+            color: #e2e8f0;
+            font-family: inherit;
+        }
+
+        textarea::placeholder {
+            color: #64748b;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #60a5fa, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 18px 32px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-family: inherit;
+            letter-spacing: 0.02em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 12px 24px rgba(96, 165, 250, 0.2),
+                0 8px 16px rgba(139, 92, 246, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 32px 0;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #60a5fa;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .result {
+            margin-top: 36px;
+            padding: 28px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 20px;
+            border-left: 4px solid #60a5fa;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .result h3 {
+            color: #f1f5f9;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 12px;
+        }
+
+        .entities {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .entity-item {
+            margin-bottom: 12px;
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .entity-label {
+            font-weight: 600;
+            color: #60a5fa;
+            min-width: 120px;
+            font-size: 0.95rem;
+        }
+
+        .entity-value {
+            color: #e2e8f0;
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .response {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 24px;
+            border-radius: 12px;
+            line-height: 1.7;
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 1rem;
+        }
+
+        .error {
+            background: rgba(127, 29, 29, 0.2);
+            color: #fca5a5;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #dc2626;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .error h3 {
+            color: #fca5a5;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+
+        .network-status {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 36px;
+            padding: 24px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .node-status {
+            text-align: center;
+            flex: 1;
+        }
+
+        .node-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #475569;
+            margin: 0 auto 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .node-indicator.active {
+            background: #10b981;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .node-indicator.processing {
+            background: #f59e0b;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .node-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">WhisperNet</div>
+            <div class="subtitle">Decentralized AI Inference with Onion Encryption</div>
+        </div>
+
+        <div class="network-status" id="network-status">
+            <div style="color:#94a3b8; width:100%; text-align:center;">Initializing DHT Discovery Swarm...</div>
+        </div>
+
+        <form id="prompt-form">
+            <div class="form-group">
+                <label for="prompt">Enter your prompt</label>
+                <textarea id="prompt" placeholder="Describe your request here..." required></textarea>
+            </div>
+            <button type="submit" class="btn" id="submit-btn">
+                Process Through Onion Network
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div class="loading-text">Processing through onion network</div>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('prompt-form');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // DHT Node status checker
+        async function checkNetworkStatus() {
+            try {
+                const response = await fetch('/api/nodes');
+                const data = await response.json();
+
+                if (data.success) {
+                    const statusContainer = document.getElementById('network-status');
+
+                    if (data.nodes.length === 0) {
+                        statusContainer.innerHTML = '<div style="color:#94a3b8; width:100%; text-align:center;">Searching for nodes via DHT Swarm...</div>';
+                    } else {
+                        statusContainer.innerHTML = ''; // Clear current
+                        data.nodes.sort((a, b) => a.nodeId.localeCompare(b.nodeId)).forEach(node => {
+                            const nodeDiv = document.createElement('div');
+                            nodeDiv.className = 'node-status';
+                            const displayUrl = node.publicUrl ? node.publicUrl.replace('https://', '') : `localhost:${node.port}`;
+                            nodeDiv.innerHTML = `
+                                <div class="node-indicator active" id="${node.nodeId}-status"></div>
+                                <div class="node-label">${node.nodeId.toUpperCase()}</div>
+                                <div style="font-size: 0.7rem; color: #60a5fa; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${node.publicUrl || `localhost:${node.port}`}">${displayUrl}</div>
+                            `;
+                            statusContainer.appendChild(nodeDiv);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch node status:', error);
+            }
+        }
+        setInterval(checkNetworkStatus, 2000);
+        checkNetworkStatus();
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const prompt = document.getElementById('prompt').value.trim();
+            if (!prompt) {
+                displayError('Please enter a prompt before submitting');
+                return;
+            }
+
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+            result.innerHTML = '';
+            document.querySelectorAll('.node-indicator').forEach(ind => ind.classList.add('processing'));
+
+            try {
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    displayResult(data.data);
+                } else {
+                    displayError(data.error || 'An error occurred while processing');
+                }
+            } catch (error) {
+                displayError('Network error: Make sure all nodes are running.');
+            } finally {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+                document.querySelectorAll('.node-indicator').forEach(ind => ind.classList.remove('processing'));
+            }
+        });
+
+        function displayResult(data) {
+            let html = '<div class="result">';
+            if (data.entities) {
+                html += '<h3>Extracted Entities</h3><div class="entities">';
+                html += `<div class="entity-item"><span class="entity-label">Query Type</span><span class="entity-value">${data.entities.query_type || 'General'}</span></div>`;
+                html += `<div class="entity-item"><span class="entity-label">Main Topic</span><span class="entity-value">${data.entities.main_topic || 'User Query'}</span></div>`;
+                if (data.entities.key_details?.length) {
+                    html += `<div class="entity-item"><span class="entity-label">Key Details</span><span class="entity-value">${data.entities.key_details.join(', ')}</span></div>`;
+                }
+                html += `<div class="entity-item"><span class="entity-label">User Goal</span><span class="entity-value">${data.entities.user_goal || 'Get Information'}</span></div>`;
+                if (data.entities.constraints_requirements?.length) {
+                    html += `<div class="entity-item"><span class="entity-label">Constraints</span><span class="entity-value">${data.entities.constraints_requirements.join(', ')}</span></div>`;
+                }
+                html += '</div>';
+            }
+            if (data.response) {
+                html += '<h3>Response</h3>';
+                const formatted = data.response.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+                html += `<div class="response">${formatted}</div>`;
+            }
+            if (data.processedBy) {
+                html += `<div style="margin-top:1rem;color:#94a3b8;font-size:0.9rem;">Processed by: ${data.processedBy} | ${data.timestamp || ''}</div>`;
+            }
+            html += '</div>';
+            result.innerHTML = html;
+        }
+
+        function displayError(error) {
+            result.innerHTML = `
+                <div class="error">
+                    <h3> Error</h3>
+                    <p>${error}</p>
+                    <p style="margin-top:1rem;font-size:0.9rem;">Check that all nodes are running:</p>
+                    <ul style="margin-top:0.5rem;font-size:0.9rem;">
+                        <li>Node 1: http://localhost:4001</li>
+                        <li>Node 2: http://localhost:4002</li>
+                        <li>Node 3: http://localhost:4003</li>
+                    </ul>
+                </div>
+            `;
+        }
+    </script>
+</body>
+
+</html>

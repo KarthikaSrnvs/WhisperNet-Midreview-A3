@@ -1,0 +1,29 @@
+{
+  "test_cases": [
+    {
+      "id": 1,
+      "prompt": "What is the capital of India?",
+      "expected": "New Delhi"
+    },
+    {
+      "id": 2,
+      "prompt": "Explain machine learning",
+      "expected": "Machine learning is a subfield of artificial intelligence that involves training algorithms to make predictions or take actions based on data."
+    },
+    {
+      "id": 3,
+      "prompt": "Who wrote Romeo and Juliet?",
+      "expected": "William Shakespeare"
+    },
+    {
+      "id": 4,
+      "prompt": "What is the boiling point of water?",
+      "expected": "212°F (100°C)"
+    },
+    {
+      "id": 5,
+      "prompt": "Tell me about photosynthesis",
+      "expected": "Photosynthesis is the process by which plants convert light energy from the sun into chemical energy in the form of glucose."
+    }
+  ]
+}

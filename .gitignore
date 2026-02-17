@@ -1,0 +1,54 @@
+# Create .gitignore
+cat > .gitignore << 'EOF'
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Temp files
+temp_*.json
+temp_*.py
+*.tmp
+*.log
+*.cache
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Output/Results files (keep only the latest if needed)
+bertscore_*.json
+rouge_results.json
+evaluation_results.json
+evaluation_history.json
+compare_input.json
+temp_*
+
+# Specific exclusions
+*.sh
+*.ps1
+EOF
